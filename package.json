@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Yogeb-tech/github-repository-tags#readme",
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.1.0",
     "typescript": "^5.9.3"
   },
