@@ -1,5 +1,8 @@
 // src/github-client.ts
 import { Octokit } from '@octokit/rest';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export class GitHubClient {
   protected octokit: Octokit;

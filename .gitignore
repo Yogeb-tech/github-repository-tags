@@ -4,6 +4,7 @@
 .env.test
 .env.development
 .env.production
+.prettierrc
 
 # Node.js/JavaScript
 node_modules/
