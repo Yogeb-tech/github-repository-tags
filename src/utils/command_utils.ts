@@ -1,4 +1,4 @@
-import { Command } from "commander";
+import { Command } from 'commander';
 
 interface CommandArgument {
   name: string;
@@ -10,18 +10,18 @@ interface CommandArgument {
 interface CommandConfig {
   command?: string;
   name?: string;
-  description?: string;   
-  action?: (input: string) => void;
+  description?: string;
+  action?: (...inputs: string[]) => void;
   arguments?: CommandArgument[];
   options?: Record<string, any>;
-  version?: string
+  version?: string;
 }
 
 export function createCommand(config: CommandConfig): Command {
   const cmd = new Command();
 
-  if (config.command){
-    cmd.command(config.command)
+  if (config.command) {
+    cmd.command(config.command);
     cmd.name(config.command);
   }
 
@@ -49,5 +49,5 @@ export function createCommand(config: CommandConfig): Command {
     }
   }
 
-  return cmd
+  return cmd;
 }

@@ -1,12 +1,35 @@
-import { createCommand } from './command_utils';
-import { nanoid } from 'nanoid';
 import { application } from '..';
+import { createCommand } from '../utils/command_utils';
+import { toGithubURL } from '../utils/utils';
 
 export function loadTagsCommands(app: application) {
+  const db = app.DB;
+  const tagCommands = app.commands.tags;
+
   /* Create Commands */
   const add = createCommand({
     command: 'add',
     description: 'Add a tag you can use',
+    arguments: [
+      {
+        name: '<tag_name>',
+        description:
+          'name of the tag you are applying to the target repository',
+      },
+    ],
+    action: async tag_name => {
+      try {
+        db.addTag(tag_name);
+        console.log(`Tag "${tag_name}" added successfully`);
+      } catch (error) {
+        console.error(`Failed to add tag "${tag_name}":`, error);
+      }
+    },
+  });
+
+  const connect = createCommand({
+    command: 'connect',
+    description: 'Connect a tag to a repo',
     arguments: [
       {
         name: '<repo_name>',
@@ -18,26 +41,23 @@ export function loadTagsCommands(app: application) {
           'name of the tag you are applying to the target repository',
       },
     ],
-    action: async () => {
-      //const tagID = 
-      //const repoID =
-      //app.DB.linkTagToRepo()
-    },
-  });
-
-  const connect = createCommand({
-    command: 'connect',
-    description: 'Connect a tag to a repo',
-    action: async () => {
-      console.log('connecting repo to a tag');
+    action: async (repo_name, tag_name) => {
+      db.linkTagToRepo(toGithubURL(repo_name), tag_name);
     },
   });
 
   const list = createCommand({
     command: 'list',
     description: 'Lists all the commands of inputted tag',
-    action: async () => {
-      console.log('list all tags');
+    arguments: [
+      {
+        name: '<tag_name>',
+        description:
+          'name of the tag you are applying to the target repository',
+      },
+    ],
+    action: async tag_name => {
+      db.getRepositoriesByTag(tag_name);
     },
   });
 
@@ -49,6 +69,7 @@ export function loadTagsCommands(app: application) {
     },
   });
 
+  /*
   const rename = createCommand({
     command: 'rename',
     description:
@@ -57,18 +78,11 @@ export function loadTagsCommands(app: application) {
       console.log('rename tag');
     },
   });
-
-  const replace = createCommand({
-    command: 'replace',
-    description: 'add a tag to saved list',
-    action: async () => {
-      console.log('add a repository to tag "x"');
-    },
-  });
+  */
 
   /* Make commands subcommands of 'tag'*/
-  app.commands.tags.addCommand(add);
-  app.commands.tags.addCommand(list);
-  app.commands.tags.addCommand(remove);
-  app.commands.tags.addCommand(rename);
+  tagCommands.addCommand(add);
+  tagCommands.addCommand(connect);
+  tagCommands.addCommand(list);
+  tagCommands.addCommand(remove);
 }

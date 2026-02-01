@@ -1,17 +1,17 @@
 -- Create tables
-CREATE TABLE repositories (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  url TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS repositories (
+  url TEXT PRIMARY KEY,      -- URL as primary key
+  name TEXT NOT NULL
 );
 
-CREATE TABLE tags (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS tags (
+  name TEXT PRIMARY KEY      -- Tag name as primary key
 );
 
-CREATE TABLE tag_repositories (
-  tag_id TEXT NOT NULL,
-  repo_id TEXT NOT NULL,
-  PRIMARY KEY(tag_id, repo_id)
+CREATE TABLE IF NOT EXISTS tag_repositories (
+  tag_name TEXT NOT NULL,
+  repo_url TEXT NOT NULL,
+  PRIMARY KEY(tag_name, repo_url),
+  FOREIGN KEY (tag_name) REFERENCES tags(name) ON DELETE CASCADE,
+  FOREIGN KEY (repo_url) REFERENCES repositories(url) ON DELETE CASCADE
 );

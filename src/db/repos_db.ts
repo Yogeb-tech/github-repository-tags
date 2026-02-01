@@ -3,13 +3,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export interface Repository {
-  id: string;
-  name: string;
   url: string;
+  name: string;
 }
 
 export interface Tag {
-  id: string;
   name: string;
 }
 
@@ -20,63 +18,86 @@ function loadSQL(fileName: string): string {
 
 export class RepoDatabase {
   private db: DB;
-  
-  constructor() {
-    // Use path to get the top level directory directory
-    const dbPath = path.join(process.cwd(), "repos.db");
 
-    // Now create/connect to the database
+  // TODO: Add error handling to each function
+  // TODO: Finish off prototype and basic functionality
+
+  constructor(fileName: string) {
+    const dbPath = path.join(process.cwd(), fileName);
     this.db = new Database(dbPath);
     this.db.exec(loadSQL('init.sql'));
   }
-  
+
   // Repository methods
   addRepository(repo: Repository): void {
-    const sql = loadSQL('repositories.sql').split(';')[0]; // Get first statement
-    this.db.prepare(sql).run(repo.id, repo.name, repo.url);
+    const sql = loadSQL('repositories.sql').split(';')[0]; // INSERT repository
+    this.db.prepare(sql).run(repo.url, repo.name);
   }
-  
+
+  getRepository(url: string): Repository | null {
+    const sql = 'SELECT * FROM repositories WHERE url = ?';
+    return this.db.prepare(sql).get(url) as Repository | null;
+  }
+
   getAllRepositories(): Repository[] {
-    const sql = loadSQL('repositories.sql').split(';')[1]; // Get second statement
+    const sql = loadSQL('repositories.sql').split(';')[1]; // GET all repositories
     return this.db.prepare(sql).all() as Repository[];
   }
-  
-  getRepositoriesByTag(tagId: string): Repository[] {
-    const sql = loadSQL('repositories.sql').split(';')[2]; // Get third statement
-    return this.db.prepare(sql).all(tagId) as Repository[];
+
+  getRepositoriesByTag(tagName: string): Repository[] {
+    const sql = loadSQL('repositories.sql').split(';')[3]; // GET repositories by tag
+    return this.db.prepare(sql).all(tagName) as Repository[];
   }
-  
-  removeRepository(repoId: string): void {
-    const sql = loadSQL('repositories.sql').split(';')[3]; // Get fourth statement
-    this.db.prepare(sql).run(repoId);
+
+  removeRepository(url: string): void {
+    const sql = loadSQL('repositories.sql').split(';')[4]; // DELETE repository
+    this.db.prepare(sql).run(url);
   }
-  
+
+  getRepositoriesWithTags(): (Repository & { tags: string })[] {
+    const sql = loadSQL('repositories.sql').split(';')[5]; // GET repositories with their tags
+    return this.db.prepare(sql).all() as (Repository & { tags: string })[];
+  }
+
   // Tag methods
-  addTag(tag: Tag): void {
-    const sql = loadSQL('tags.sql').split(';')[0];
-    this.db.prepare(sql).run(tag.id, tag.name);
+  addTag(tagName: string): void {
+    const sql = loadSQL('tags.sql').split(';')[0]; // INSERT tag
+    this.db.prepare(sql).run(tagName);
   }
-  
+
   getAllTags(): Tag[] {
-    const sql = loadSQL('tags.sql').split(';')[1];
+    const sql = loadSQL('tags.sql').split(';')[1]; // GET all tags
     return this.db.prepare(sql).all() as Tag[];
   }
-  
-  getTagsByRepo(repoId: string): Tag[] {
-    const sql = loadSQL('tags.sql').split(';')[2];
-    return this.db.prepare(sql).all(repoId) as Tag[];
+
+  getTagsByRepo(repoUrl: string): Tag[] {
+    const sql = loadSQL('tags.sql').split(';')[2]; // GET tags by repository
+    return this.db.prepare(sql).all(repoUrl) as Tag[];
   }
-  
-  removeTag(tagId: string): void {
-    const sql = loadSQL('tags.sql').split(';')[3];
-    this.db.prepare(sql).run(tagId);
+
+  removeTag(tagName: string): void {
+    const sql = loadSQL('tags.sql').split(';')[3]; // DELETE tag
+    this.db.prepare(sql).run(tagName);
   }
-  
-  linkTagToRepo(tagId: string, repoId: string): void {
-    const sql = loadSQL('tags.sql').split(';')[4];
-    this.db.prepare(sql).run(tagId, repoId);
+
+  linkTagToRepo(tagName: string, repoUrl: string): void {
+    const sql = loadSQL('tags.sql').split(';')[4]; // LINK tag to repository
+    this.db.prepare(sql).run(tagName, repoUrl);
   }
-  
+
+  unlinkTagFromRepo(tagName: string, repoUrl: string): void {
+    const sql = loadSQL('tags.sql').split(';')[5]; // UNLINK tag from repository
+    this.db.prepare(sql).run(tagName, repoUrl);
+  }
+
+  getTagUsageCount(): { name: string; usage_count: number }[] {
+    const sql = loadSQL('tags.sql').split(';')[6]; // GET tag usage count
+    return this.db.prepare(sql).all() as {
+      name: string;
+      usage_count: number;
+    }[];
+  }
+
   close(): void {
     this.db.close();
   }

@@ -22,14 +22,13 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.1.0",
-    "typescript": "^5.9.3",
-    "copyfiles": "^2.4.1"
+    "copyfiles": "^2.4.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "better-sqlite3": "^12.6.2",
     "commander": "^14.0.2",
-    "dotenv": "^17.2.3",
-    "nanoid": "^5.1.6"
+    "dotenv": "^17.2.3"
   }
 }

@@ -9,7 +9,9 @@
     "rootDir": "./src",
     "typeRoots": ["./node_modules/@types", "./types"],
     "allowSyntheticDefaultImports": true,
-    "strict": true
+    "strict": true,
+    "sourceMap": true,
+    "inlineSources": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

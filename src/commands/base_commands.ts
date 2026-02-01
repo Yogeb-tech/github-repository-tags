@@ -1,6 +1,7 @@
 // src/commands/base-commands.ts
 import { application } from '..';
-import { createCommand } from './command_utils';
+import { createCommand } from '../utils/command_utils';
+import { toGithubURL } from '../utils/utils';
 import { loadTagsCommands } from './tags_commands';
 
 export function loadBaseCommands(app: application) {
@@ -16,19 +17,19 @@ export function loadBaseCommands(app: application) {
       action: async () => {
         try {
           const user = await octokit.users.getAuthenticated();
-          const starred = await octokit.activity.listReposStarredByUser({
+          const starred_repos = await octokit.activity.listReposStarredByUser({
             username: user.data.login,
             per_page: 100,
           });
 
           console.log(
-            `\n ${starred.data.length} starred repositories for ${user.data.login}:\n`,
+            `\n ${starred_repos.data.length} starred repositories for ${user.data.login}:\n`,
           );
 
-          starred.data.forEach((item: any, index: number) => {
+          starred_repos.data.forEach((item: any, index: number) => {
             const repo = item.repo || item; // Handle API response format
             console.log(
-              `${index + 1}. ${repo.name} - https://github.com/${repo.full_name}`,
+              `${index + 1}. ${repo.name} - ${toGithubURL(repo.full_name)}`,
             );
           });
         } catch (error: any) {
@@ -38,7 +39,6 @@ export function loadBaseCommands(app: application) {
     }),
   );
 
-  // TODO: Move this to index.ts
   loadTagsCommands(app);
 
   base_commands.addCommand(app.commands.tags);
