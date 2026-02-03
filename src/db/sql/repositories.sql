@@ -1,5 +1,5 @@
 -- INSERT repository
-INSERT OR REPLACE INTO repositories VALUES (?, ?);
+INSERT OR REPLACE INTO repositories (url, name) VALUES (?, ?);
 
 -- GET all repositories
 SELECT * FROM repositories;

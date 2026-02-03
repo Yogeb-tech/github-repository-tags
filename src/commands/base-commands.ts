@@ -1,8 +1,7 @@
 // src/commands/base-commands.ts
 import { application } from '..';
-import { createCommand } from '../utils/command_utils';
-import { toGithubURL } from '../utils/utils';
-import { loadTagsCommands } from './tags_commands';
+import { createCommand } from '../utils/command-utils';
+import { syncStarredRepos, toGithubURL } from '../utils/utils';
 
 export function loadBaseCommands(app: application) {
   const client = app.client;
@@ -39,7 +38,20 @@ export function loadBaseCommands(app: application) {
     }),
   );
 
-  loadTagsCommands(app);
-
-  base_commands.addCommand(app.commands.tags);
+  // Add a sync command
+  base_commands.addCommand(
+    createCommand({
+      command: 'sync',
+      description:
+        'Sync your starred GitHub repositories to the local database',
+      action: async () => {
+        try {
+          // Import the sync function
+          await syncStarredRepos(client, app.DB);
+        } catch (error: any) {
+          console.error('Error:', error.message);
+        }
+      },
+    }),
+  );
 }

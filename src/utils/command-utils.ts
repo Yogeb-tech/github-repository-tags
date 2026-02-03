@@ -29,6 +29,10 @@ export function createCommand(config: CommandConfig): Command {
     cmd.name(config.name);
   }
 
+  if (config.description) {
+    cmd.description(config.description);
+  }
+
   if (config.version) {
     cmd.version(config.version);
   }
