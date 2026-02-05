@@ -1,7 +1,7 @@
 -- Create tables
 CREATE TABLE IF NOT EXISTS repositories (
-  url TEXT PRIMARY KEY,      -- URL as primary key
-  name TEXT NOT NULL
+  name TEXT PRIMARY KEY,      -- Name as primary key
+  url TEXT NOT NULL UNIQUE 
 );
 
 CREATE TABLE IF NOT EXISTS tags (
@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS tags (
 
 CREATE TABLE IF NOT EXISTS tag_repositories (
   tag_name TEXT NOT NULL,
-  repo_url TEXT NOT NULL,
-  PRIMARY KEY(tag_name, repo_url),
+  repo_name TEXT NOT NULL,    -- Changed from repo_url to repo_name
+  PRIMARY KEY(tag_name, repo_name),
   FOREIGN KEY (tag_name) REFERENCES tags(name) ON DELETE CASCADE,
-  FOREIGN KEY (repo_url) REFERENCES repositories(url) ON DELETE CASCADE
+  FOREIGN KEY (repo_name) REFERENCES repositories(name) ON DELETE CASCADE
 );

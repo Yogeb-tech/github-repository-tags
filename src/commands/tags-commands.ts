@@ -1,7 +1,6 @@
 import { application } from '..';
 import { Repository } from '../db/repos-db';
 import { createCommand } from '../utils/command-utils';
-import { toGithubURL } from '../utils/utils';
 
 export function loadTagCommands(app: application) {
   const db = app.DB;
@@ -9,7 +8,6 @@ export function loadTagCommands(app: application) {
 
   /* Create Commands - all at base level with "tag-" prefix */
 
-  //TODO: Make sure tag-connect, tag-remove, tag-list, tag-list-all,
   // tag-add command
   baseCommands.addCommand(
     createCommand({
@@ -50,7 +48,7 @@ export function loadTagCommands(app: application) {
       ],
       action: async (repoName, tagName) => {
         try {
-          db.linkTagToRepo(toGithubURL(repoName), tagName);
+          db.linkTagToRepo(tagName, repoName);
           console.log(
             `Repository "${repoName}" connected to tag "${tagName}" successfully`,
           );
@@ -119,7 +117,8 @@ export function loadTagCommands(app: application) {
       ],
       action: async (repoName: string, tagName: string) => {
         try {
-          db.unlinkTagFromRepo(toGithubURL(repoName), tagName);
+          // Use repoName directly instead of converting to URL
+          db.unlinkTagFromRepo(tagName, repoName);
           console.log(`Tag "${tagName}" removed from repository "${repoName}"`);
         } catch (error: any) {
           console.error(
@@ -131,7 +130,7 @@ export function loadTagCommands(app: application) {
     }),
   );
 
-  // Optional: tag-list-all command to list all tags
+  // tag-list-all command to list all tags
   baseCommands.addCommand(
     createCommand({
       command: 'tag-list-all',

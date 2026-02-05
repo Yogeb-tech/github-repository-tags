@@ -6,7 +6,6 @@ import { loadTagCommands } from './commands/tags-commands';
 import { RepoDatabase } from './db/repos-db';
 import { GitHubClient } from './github-client';
 import { createCommand } from './utils/command-utils';
-import { syncStarredRepos } from './utils/utils';
 
 type CommandType = 'base';
 
@@ -34,9 +33,6 @@ const app: application = {
   client: client,
 };
 
-// Load Starred Repositories the user into database
-syncStarredRepos(app.client, app.DB);
-
 /* Load command definitions from modules */
 loadBaseCommands(app);
 loadTagCommands(app);
@@ -44,15 +40,12 @@ loadTagCommands(app);
 commands.addHelpText(
   'after',
   `
-First-time setup:
-  node dist/index.js setup         # Sync repos and create common tags
-
-Regular use:
-  node dist/index.js sync          # Sync starred repos from GitHub
-  node dist/index.js list-starred  # List your starred repos
+Examples:
+  node dist/index.js sync             # Sync starred repos from GitHub
+  node dist/index.js list-starred     # List your starred repos
   node dist/index.js tag-add <name>   # Create a new tag
   node dist/index.js tag-connect <repo> <tag>  # Tag a repository
-  node dist/index.js tag-list <tag>    # List repos with a tag
+  node dist/index.js tag-list <tag>   # List repos with a tag
 
 Run any command with --help for more details.
 `,
